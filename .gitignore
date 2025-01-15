@@ -1,4 +1,4 @@
 bin/
 release/
-build-*/
+build*/
 *.pro.user

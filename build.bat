@@ -15,7 +15,7 @@ goto usage
 rmdir /S /Q build-%1
 mkdir build-%1
 pushd build-%1
-qmake ..\QtPlugin\QtPlugin.pro CONFIG+=release
+qmake ..\DataExplorer\DataExplorer.pro CONFIG+=release
 if not %ERRORLEVEL%==0 exit /b
 jom
 if not %ERRORLEVEL%==0 exit /b
