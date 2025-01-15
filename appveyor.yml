@@ -1,0 +1,15 @@
+version: 1.0.{build}
+image: Visual Studio 2013
+environment:
+  QT32PATH: C:\Qt\5.6\msvc2013\bin
+  QT64PATH: C:\Qt\5.6\msvc2013_64\bin
+  QTCREATORPATH: C:\Qt\Tools\QtCreator\bin
+install:
+- cmd: git submodule update --init --recursive --no-recommend-shallow
+build_script:
+- cmd: call build.bat x32
+- cmd: call build.bat x64
+- cmd: call release.bat
+artifacts:
+- path: release
+  name: QtPlugin-%APPVEYOR_REPO_COMMIT%
