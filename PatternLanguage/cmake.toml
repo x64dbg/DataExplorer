@@ -1,0 +1,31 @@
+[project]
+name = "PatternLanguage"
+
+[fetch-content.PatternLanguage]
+git = "https://github.com/WerWolv/PatternLanguage"
+tag = "3f112c02bb78a134f5814d536df9d1430c9e42d5"
+
+[options]
+LIBPL_ENABLE_CLI = false
+
+[target.PatternLanguage]
+type = "shared"
+sources = [
+    "src/PatternLanguage.cpp",
+    "src/PatternLanguage.h",
+]
+link-libraries = [
+    "libpl", # TODO: with ::libpl it does not work
+    "libpl-gen",
+    "fmt::fmt-header-only",
+]
+compile-features = ["cxx_std_23"]
+
+[target.PatternLanguage.properties]
+OUTPUT_NAME = "PatternLanguage"
+PREFIX = "" # TODO: this does not work
+
+[target.example]
+type = "executable"
+sources = ["src/example.cpp"]
+link-libraries = ["PatternLanguage"]
