@@ -1,9 +1,16 @@
-# QtPlugin
+# DataExplorer
 
-Plugin demonstrating how to link with Qt.
+The DataExplorer plugin integrates the [pattern language](https://docs.werwolv.net/pattern-language) from [ImHex](https://imhex.werwolv.net/) into [x64dbg](https://x64dbg.com).
 
-## AppVeyor
+![](.github/screenshot.png)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/gkc9p5993v142kdi/branch/master?svg=true)](https://ci.appveyor.com/project/x64dbg/qtplugin/branch/master)
+## Installation
 
-There is an example [AppVeyor](https://ci.appveyor.com) configuration included in this template. When you rename `QtPlugin` to your own project name, you have to update `build.bat` and `appveyor.yml` to match it.
+- Download the [latest release](https://github.com/x64dbg/DataExplorer/releases/latest)
+- Install the plugin so you have:
+  ```
+  <x64dbg-dir>/x64/plugins/DataExplorer/DataExplorer.dp64
+  ```
+- Launch x64dbg and open the plugin via `Plugins -> DataExplorer -> Open` (Ctrl+Shift+D)
+
+**Note**: There is no 32-bit support and it is not planned.
