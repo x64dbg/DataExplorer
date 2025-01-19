@@ -23,7 +23,6 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private slots:
-    void on_buttonShowTab_clicked();
     void on_buttonParse_pressed();
     void on_logEdit_anchorClicked(const QUrl &url);
 

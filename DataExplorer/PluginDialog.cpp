@@ -145,11 +145,6 @@ void PluginDialog::closeEvent(QCloseEvent* event)
     QDialog::closeEvent(event);
 }
 
-void PluginDialog::on_buttonShowTab_clicked()
-{
-    QtPlugin::ShowTab();
-}
-
 void PluginDialog::on_buttonParse_pressed()
 {
     QString includeDir = QString::fromUtf16((const ushort*)Plugin::szDllDir);

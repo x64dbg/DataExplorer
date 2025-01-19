@@ -8,7 +8,6 @@ namespace QtPlugin
     void WaitForSetup();
     void Stop();
     void WaitForStop();
-    void ShowTab();
 } //QtPlugin
 
 #endif // QTPLUGIN_H

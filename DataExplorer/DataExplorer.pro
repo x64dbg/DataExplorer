@@ -52,8 +52,6 @@ SOURCES +=\
     pluginmain.cpp \
     QtPlugin.cpp \
     PluginDialog.cpp \
-    PluginMainWindow.cpp \
-    PluginTabWidget.cpp \
     CodeEditor.cpp \
     PatternHighlighter.cpp
 
@@ -61,15 +59,12 @@ HEADERS += \
     pluginmain.h \
     QtPlugin.h \
     PluginDialog.h \
-    PluginMainWindow.h \
-    PluginTabWidget.h \
     CodeEditor.h \
     PatternHighlighter.h \
     PatternLanguage.h
 
 FORMS += \
     PluginDialog.ui \
-    PluginMainWindow.ui
 
 RESOURCES += \
     resource.qrc \

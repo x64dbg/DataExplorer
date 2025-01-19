@@ -1,6 +1,5 @@
 #include "QtPlugin.h"
 #include "PluginDialog.h"
-#include "PluginTabWidget.h"
 #include "pluginmain.h"
 
 #include <QFile>
@@ -8,7 +7,6 @@
 #include <QDesktopServices>
 
 static PluginDialog* pluginDialog;
-static PluginTabWidget* pluginTabWidget;
 static HANDLE hSetupEvent;
 static HANDLE hStopEvent;
 
@@ -59,9 +57,6 @@ void QtPlugin::Setup()
 
     pluginDialog = new PluginDialog(parent);
 
-    //pluginTabWidget = new PluginTabWidget(parent);
-    //GuiAddQWidgetTab(pluginTabWidget);
-
     auto pngOpen = getResourceBytes(":/icons/images/icon.png");
     ICONDATA iconOpen = {};
     iconOpen.data = pngOpen.constData();
@@ -91,13 +86,9 @@ void QtPlugin::WaitForSetup()
 
 void QtPlugin::Stop()
 {
-    //GuiCloseQWidgetTab(pluginTabWidget);
-    //pluginTabWidget->close();
-
     pluginDialog->close();
     delete pluginDialog;
-
-    //delete pluginTabWidget;
+    pluginDialog = nullptr;
 
     SetEvent(hStopEvent);
 }
@@ -105,9 +96,4 @@ void QtPlugin::Stop()
 void QtPlugin::WaitForStop()
 {
     WaitForSingleObject(hStopEvent, INFINITE);
-}
-
-void QtPlugin::ShowTab()
-{
-    //GuiShowQWidgetTab(pluginTabWidget);
 }
