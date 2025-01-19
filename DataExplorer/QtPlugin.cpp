@@ -4,6 +4,8 @@
 #include "pluginmain.h"
 
 #include <QFile>
+#include <QUrl>
+#include <QDesktopServices>
 
 static PluginDialog* pluginDialog;
 static PluginTabWidget* pluginTabWidget;
@@ -27,16 +29,21 @@ static QWidget* getParent()
 enum
 {
     MenuOpen,
+    MenuDocumentation,
 };
 
 extern "C" __declspec(dllexport) void CBMENUENTRY(CBTYPE, PLUG_CB_MENUENTRY* info)
 {
-    if(info->hEntry == MenuOpen)
+    switch(info->hEntry)
     {
-        GuiExecuteOnGuiThread([]()
-        {
-            pluginDialog->show();
-        });
+    case MenuOpen:
+        pluginDialog->show();
+        break;
+    case MenuDocumentation:
+        QDesktopServices::openUrl(QUrl("https://docs.werwolv.net/pattern-language"));
+        break;
+    default:
+        break;
     }
 }
 
@@ -55,16 +62,24 @@ void QtPlugin::Setup()
     //pluginTabWidget = new PluginTabWidget(parent);
     //GuiAddQWidgetTab(pluginTabWidget);
 
-    auto iconPng = getResourceBytes(":/icons/images/icon.png");
-    ICONDATA icon = {};
-    icon.data = iconPng.constData();
-    icon.size = iconPng.size();
+    auto pngOpen = getResourceBytes(":/icons/images/icon.png");
+    ICONDATA iconOpen = {};
+    iconOpen.data = pngOpen.constData();
+    iconOpen.size = pngOpen.size();
 
-    _plugin_menuseticon(Plugin::hMenu, &icon);
+    _plugin_menuseticon(Plugin::hMenu, &iconOpen);
 
     _plugin_menuaddentry(Plugin::hMenu, MenuOpen, "Open");
-    _plugin_menuentryseticon(Plugin::handle, MenuOpen, &icon);
+    _plugin_menuentryseticon(Plugin::handle, MenuOpen, &iconOpen);
     _plugin_menuentrysethotkey(Plugin::handle, MenuOpen, "Ctrl+Shift+D");
+
+    auto pngDocumentation = getResourceBytes(":/icons/images/documentation.png");
+    ICONDATA iconDocumentation = {};
+    iconDocumentation.data = pngDocumentation.constData();
+    iconDocumentation.size = pngDocumentation.size();
+
+    _plugin_menuaddentry(Plugin::hMenu, MenuDocumentation, "Documentation");
+    _plugin_menuentryseticon(Plugin::handle, MenuDocumentation, &iconDocumentation);
 
     SetEvent(hSetupEvent);
 }
