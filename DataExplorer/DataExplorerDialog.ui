@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PluginDialog</class>
- <widget class="QDialog" name="PluginDialog">
+ <class>DataExplorerDialog</class>
+ <widget class="QDialog" name="DataExplorerDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/icons/images/icon.png</normaloff>:/icons/images/icon.png</iconset>
+    <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <widget class="CodeEditor" name="codeEdit">
    <property name="geometry">
@@ -32,6 +32,14 @@
      <pointsize>8</pointsize>
      <bold>true</bold>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">CodeEditor {
+    font-family: &quot;Courier New&quot;, &quot;Courier&quot;, monospace;
+    font-size: 8pt;
+    color: #000000;
+    background-color: #fefff7;
+}</string>
    </property>
    <property name="plainText">
     <string>struct Foo {

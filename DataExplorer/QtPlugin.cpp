@@ -1,12 +1,12 @@
 #include "QtPlugin.h"
-#include "PluginDialog.h"
+#include "DataExplorerDialog.h"
 #include "pluginmain.h"
 
 #include <QFile>
 #include <QUrl>
 #include <QDesktopServices>
 
-static PluginDialog* pluginDialog;
+static DataExplorerDialog* dataExplorerDialog;
 static HANDLE hSetupEvent;
 static HANDLE hStopEvent;
 
@@ -35,7 +35,8 @@ extern "C" __declspec(dllexport) void CBMENUENTRY(CBTYPE, PLUG_CB_MENUENTRY* inf
     switch(info->hEntry)
     {
     case MenuOpen:
-        pluginDialog->show();
+        dataExplorerDialog->show();
+        dataExplorerDialog->activateWindow();
         break;
     case MenuDocumentation:
         QDesktopServices::openUrl(QUrl("https://docs.werwolv.net/pattern-language"));
@@ -55,9 +56,9 @@ void QtPlugin::Setup()
 {
     QWidget* parent = getParent();
 
-    pluginDialog = new PluginDialog(parent);
+    dataExplorerDialog = new DataExplorerDialog(parent);
 
-    auto pngOpen = getResourceBytes(":/icons/images/icon.png");
+    auto pngOpen = getResourceBytes(":/images/icon.png");
     ICONDATA iconOpen = {};
     iconOpen.data = pngOpen.constData();
     iconOpen.size = pngOpen.size();
@@ -68,7 +69,7 @@ void QtPlugin::Setup()
     _plugin_menuentryseticon(Plugin::handle, MenuOpen, &iconOpen);
     _plugin_menuentrysethotkey(Plugin::handle, MenuOpen, "Ctrl+Shift+D");
 
-    auto pngDocumentation = getResourceBytes(":/icons/images/documentation.png");
+    auto pngDocumentation = getResourceBytes(":/images/documentation.png");
     ICONDATA iconDocumentation = {};
     iconDocumentation.data = pngDocumentation.constData();
     iconDocumentation.size = pngDocumentation.size();
@@ -86,9 +87,9 @@ void QtPlugin::WaitForSetup()
 
 void QtPlugin::Stop()
 {
-    pluginDialog->close();
-    delete pluginDialog;
-    pluginDialog = nullptr;
+    dataExplorerDialog->close();
+    delete dataExplorerDialog;
+    dataExplorerDialog = nullptr;
 
     SetEvent(hStopEvent);
 }

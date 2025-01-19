@@ -1,5 +1,5 @@
-#include "PluginDialog.h"
-#include "ui_PluginDialog.h"
+#include "DataExplorerDialog.h"
+#include "ui_DataExplorerDialog.h"
 #include <QMessageBox>
 #include <QDir>
 #include <QTextBlock>
@@ -94,7 +94,7 @@ struct PatternVisitor
     }
 };
 
-PluginDialog::PluginDialog(QWidget* parent) : QDialog(parent), ui(new Ui::PluginDialog)
+DataExplorerDialog::DataExplorerDialog(QWidget* parent) : QDialog(parent), ui(new Ui::DataExplorerDialog)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -127,14 +127,14 @@ PluginDialog::PluginDialog(QWidget* parent) : QDialog(parent), ui(new Ui::Plugin
     }
 }
 
-PluginDialog::~PluginDialog()
+DataExplorerDialog::~DataExplorerDialog()
 {
     delete ui;
     delete mVisitor;
     delete mHighlighter;
 }
 
-void PluginDialog::closeEvent(QCloseEvent* event)
+void DataExplorerDialog::closeEvent(QCloseEvent* event)
 {
     QSettings settings("DataExplorer");
     settings.setValue("code", ui->codeEdit->toPlainText());
@@ -145,7 +145,25 @@ void PluginDialog::closeEvent(QCloseEvent* event)
     QDialog::closeEvent(event);
 }
 
-void PluginDialog::on_buttonParse_pressed()
+void DataExplorerDialog::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::StyleChange)
+    {
+        duint dark = 0;
+        BridgeSettingGetUint("Colors", "DarkTitleBar", &dark);
+        _plugin_logprintf("[changeEvent] dark=%d\n", dark != 0);
+        if (mHighlighter)
+        {
+            ensurePolished();
+            mHighlighter->refreshColors(ui->codeEdit);
+            mHighlighter->setDocument(nullptr);
+            mHighlighter->setDocument(ui->codeEdit->document());
+        }
+    }
+    QDialog::changeEvent(event);
+}
+
+void DataExplorerDialog::on_buttonParse_pressed()
 {
     QString includeDir = QString::fromUtf16((const ushort*)Plugin::szDllDir);
     includeDir += "\\includes";
@@ -169,15 +187,15 @@ void PluginDialog::on_buttonParse_pressed()
     args.includes_data = includes;
     args.log_handler = [](void* userdata, LogLevel level, const char* message)
     {
-        ((PluginDialog*)userdata)->logHandler(level, message);
+        ((DataExplorerDialog*)userdata)->logHandler(level, message);
     };
     args.compile_error = [](void* userdata, const CompileError* error)
     {
-        ((PluginDialog*)userdata)->compileError(*error);
+        ((DataExplorerDialog*)userdata)->compileError(*error);
     };
     args.eval_error = [](void *userdata, const EvalError* error)
     {
-        ((PluginDialog*)userdata)->evalError(*error);
+        ((DataExplorerDialog*)userdata)->evalError(*error);
     };
     args.data_source = [](void*, uint64_t address, void* buffer, size_t size)
     {
@@ -186,7 +204,7 @@ void PluginDialog::on_buttonParse_pressed()
     };
     args.visit = [](void *userdata, TreeNode parent, const VisitInfo *info) -> TreeNode
     {
-        return ((PluginDialog*)userdata)->mVisitor->visit(parent, *info);
+        return ((DataExplorerDialog*)userdata)->mVisitor->visit(parent, *info);
     };
     // TODO: support removing type nodes from the API?
     // TODO: callback on remove of type node
@@ -194,11 +212,15 @@ void PluginDialog::on_buttonParse_pressed()
     mVisitor->clear();
     ui->logEdit->clear();
     ui->codeEdit->setErrorLine(-1);
-    PatternRun(&args);
+    auto status = PatternRun(&args);
     GuiUpdateTypeWidget();
+    if(status == PatternSuccess)
+    {
+        logHandler(LogLevelInfo, "Open the struct widget to see the results!\n");
+    }
 }
 
-void PluginDialog::logHandler(LogLevel level, const char* message)
+void DataExplorerDialog::logHandler(LogLevel level, const char* message)
 {
     Q_UNUSED(level);
 
@@ -223,13 +245,13 @@ void PluginDialog::logHandler(LogLevel level, const char* message)
     cursor.endEditBlock();
 }
 
-void PluginDialog::compileError(const CompileError& error)
+void DataExplorerDialog::compileError(const CompileError& error)
 {
     Q_UNUSED(error);
     // TODO: highlight error lines
 }
 
-void PluginDialog::evalError(const EvalError& error)
+void DataExplorerDialog::evalError(const EvalError& error)
 {
     auto errorLine = error.location.line;
     auto errorColumn = error.location.column;
@@ -245,7 +267,7 @@ void PluginDialog::evalError(const EvalError& error)
 }
 
 
-void PluginDialog::on_logEdit_anchorClicked(const QUrl &url)
+void DataExplorerDialog::on_logEdit_anchorClicked(const QUrl &url)
 {
     if(url.scheme() == "navigate")
     {

@@ -1,5 +1,4 @@
-#ifndef QTPLUGIN_H
-#define QTPLUGIN_H
+#pragma once
 
 namespace QtPlugin
 {
@@ -9,5 +8,3 @@ namespace QtPlugin
     void Stop();
     void WaitForStop();
 } //QtPlugin
-
-#endif // QTPLUGIN_H

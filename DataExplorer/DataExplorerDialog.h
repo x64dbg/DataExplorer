@@ -1,5 +1,4 @@
-#ifndef PLUGINDIALOG_H
-#define PLUGINDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <windows.h>
@@ -8,19 +7,20 @@
 
 namespace Ui
 {
-class PluginDialog;
+class DataExplorerDialog;
 }
 
-class PluginDialog : public QDialog
+class DataExplorerDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit PluginDialog(QWidget* parent);
-    ~PluginDialog();
+    explicit DataExplorerDialog(QWidget* parent);
+    ~DataExplorerDialog();
 
 protected:
     void closeEvent(QCloseEvent* event) override;
+    void changeEvent(QEvent* event) override;
 
 private slots:
     void on_buttonParse_pressed();
@@ -31,9 +31,7 @@ private:
     void compileError(const CompileError& error);
     void evalError(const EvalError& error);
 
-    Ui::PluginDialog *ui;
+    Ui::DataExplorerDialog *ui;
     struct PatternVisitor* mVisitor = nullptr;
     class PatternHighlighter* mHighlighter = nullptr;
 };
-
-#endif // PLUGINDIALOG_H

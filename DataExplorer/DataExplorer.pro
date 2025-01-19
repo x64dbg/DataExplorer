@@ -51,20 +51,20 @@ LIBS += -luser32 -lshlwapi
 SOURCES +=\
     pluginmain.cpp \
     QtPlugin.cpp \
-    PluginDialog.cpp \
+    DataExplorerDialog.cpp \
     CodeEditor.cpp \
     PatternHighlighter.cpp
 
 HEADERS += \
     pluginmain.h \
     QtPlugin.h \
-    PluginDialog.h \
+    DataExplorerDialog.h \
     CodeEditor.h \
     PatternHighlighter.h \
     PatternLanguage.h
 
 FORMS += \
-    PluginDialog.ui \
+    DataExplorerDialog.ui
 
 RESOURCES += \
     resource.qrc \

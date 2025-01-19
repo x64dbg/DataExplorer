@@ -1,5 +1,4 @@
-#ifndef _PLUGINMAIN_H
-#define _PLUGINMAIN_H
+#pragma once
 
 #include <windows.h>
 #include "pluginsdk\_plugins.h"
@@ -17,5 +16,3 @@ namespace Plugin
     extern int hMenuSymmod;
     extern wchar_t szDllDir[MAX_PATH];
 } //Plugin
-
-#endif //_PLUGINMAIN_H
