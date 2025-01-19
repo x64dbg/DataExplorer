@@ -35,12 +35,12 @@ include(FetchContent)
 if(POLICY CMP0135)
 	cmake_policy(SET CMP0135 NEW)
 endif()
-message(STATUS "Fetching PatternLanguage (3f112c02bb78a134f5814d536df9d1430c9e42d5)...")
+message(STATUS "Fetching PatternLanguage (4e74b705f68a24377144d11c9e5143e4935cf1e0)...")
 FetchContent_Declare(PatternLanguage
 	GIT_REPOSITORY
 		"https://github.com/WerWolv/PatternLanguage"
 	GIT_TAG
-		3f112c02bb78a134f5814d536df9d1430c9e42d5
+		4e74b705f68a24377144d11c9e5143e4935cf1e0
 )
 FetchContent_MakeAvailable(PatternLanguage)
 
@@ -60,6 +60,14 @@ target_compile_features(PatternLanguage PUBLIC
 	cxx_std_23
 )
 
+if(NOT TARGET libpl)
+	message(FATAL_ERROR "Target \"libpl\" referenced by \"PatternLanguage\" does not exist!")
+endif()
+
+if(NOT TARGET libpl-gen)
+	message(FATAL_ERROR "Target \"libpl-gen\" referenced by \"PatternLanguage\" does not exist!")
+endif()
+
 target_link_libraries(PatternLanguage PUBLIC
 	libpl
 	libpl-gen
@@ -69,6 +77,10 @@ target_link_libraries(PatternLanguage PUBLIC
 set_target_properties(PatternLanguage PROPERTIES
 	OUTPUT_NAME
 		PatternLanguage
+	PREFIX
+		""
+	IMPORT_PREFIX
+		""
 )
 
 # Target: example
@@ -81,6 +93,10 @@ add_executable(example)
 
 target_sources(example PRIVATE ${example_SOURCES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${example_SOURCES})
+
+if(NOT TARGET PatternLanguage)
+	message(FATAL_ERROR "Target \"PatternLanguage\" referenced by \"example\" does not exist!")
+endif()
 
 target_link_libraries(example PRIVATE
 	PatternLanguage

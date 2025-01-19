@@ -29,6 +29,7 @@
 #include <pl/patterns/pattern_unsigned.hpp>
 #include <pl/patterns/pattern_wide_character.hpp>
 #include <pl/patterns/pattern_wide_string.hpp>
+#include <pl/patterns/pattern_error.hpp>
 
 using namespace pl;
 
@@ -129,6 +130,11 @@ public:
     void visit(ptrn::PatternBitfieldArray &pattern) override
     {
         formatArray(&pattern);
+    }
+
+    void visit(ptrn::PatternError &pattern) override
+    {
+        formatString(&pattern);
     }
 
     void visit(ptrn::PatternPointer &pattern) override
