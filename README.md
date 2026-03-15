@@ -10,7 +10,6 @@ The DataExplorer plugin integrates the [pattern language](https://docs.werwolv.n
 - Install the plugin so you have:
   ```
   <x64dbg-dir>/x64/plugins/DataExplorer/DataExplorer.dp64
+  <x64dbg-dir>/x32/plugins/DataExplorer/DataExplorer.dp32
   ```
 - Launch x64dbg and open the plugin via `Plugins -> DataExplorer -> Open` (Ctrl+Shift+D)
-
-**Note**: There is no 32-bit support and it is not planned.

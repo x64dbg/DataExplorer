@@ -160,30 +160,28 @@ public:
 private:
     static std::string debugPattern(const char *title, const ptrn::Pattern *pattern)
     {
-        using ::fmt::format;
-
         std::string p;
-        p += format("{}(\n", title);
-        p += format("  offset = {:#x}\n", pattern->getOffset());
-        p += format("  size = {:#x}\n", pattern->getSize());
-        p += format("  variableName = {}\n", pattern->getVariableName()); // name of the variable (or var[array_idx])
-        p += format("  displayName = {}\n",
+        p += fmt::format("{}(\n", title);
+        p += fmt::format("  offset = {:#x}\n", pattern->getOffset());
+        p += fmt::format("  size = {:#x}\n", pattern->getSize());
+        p += fmt::format("  variableName = {}\n", pattern->getVariableName()); // name of the variable (or var[array_idx])
+        p += fmt::format("  displayName = {}\n",
                     pattern->getDisplayName()); // [[name("Whatever")]] (falls back to variable name)
-        p += format("  formattedName = {}\n",
+        p += fmt::format("  formattedName = {}\n",
                     pattern->getFormattedName()); // formatted type name (falls back to type name)
-        p += format("  typeName = {}\n", pattern->getTypeName()); // name of the type (without struct or array size)
-        p += format("  line = {}\n", pattern->getLine()); // source line
-        p += format("  visibility = {}\n", (int) pattern->getVisibility());
+        p += fmt::format("  typeName = {}\n", pattern->getTypeName()); // name of the type (without struct or array size)
+        p += fmt::format("  line = {}\n", pattern->getLine()); // source line
+        p += fmt::format("  visibility = {}\n", (int) pattern->getVisibility());
         //p += format("  endian = {}\n", (int) pattern->getEndian());
         //p += format("  section = {}\n", pattern->getSection());
-        p += format("  comment = {}\n", pattern->getComment());
-        p += format("  color = {:#x}\n", pattern->getColor());
-        p += format("  sealed = {}\n", pattern->isSealed());
-        p += format(")");
+        p += fmt::format("  comment = {}\n", pattern->getComment());
+        p += fmt::format("  color = {:#x}\n", pattern->getColor());
+        p += fmt::format("  sealed = {}\n", pattern->isSealed());
+        p += fmt::format(")");
         return p;
     }
 
-    TreeNode apiVisit(const char *reason, const ptrn::Pattern *pattern, const std::string &value)
+    TreeNode apiVisit(const char *reason, ptrn::Pattern *pattern, const std::string &value)
     {
         // TODO: array elements,
         auto formattedTypeName = pattern->getFormattedName();
@@ -204,7 +202,7 @@ private:
         return m_args->visit(m_args->userdata, treeTop(), &info);
     }
 
-    static std::string readFormatter(const ptrn::Pattern *pattern)
+    static std::string readFormatter(ptrn::Pattern *pattern)
     {
         if (const auto &functionName = pattern->getReadFormatterFunction(); !functionName.empty())
         {
@@ -216,7 +214,7 @@ private:
         }
     }
 
-    void formatValue(const ptrn::Pattern *pattern)
+    void formatValue(ptrn::Pattern *pattern)
     {
         if (pattern->getVisibility() == ptrn::Visibility::Hidden) return;
         if (pattern->getVisibility() == ptrn::Visibility::TreeHidden) return;
@@ -228,25 +226,25 @@ private:
 
             value = std::visit(wolv::util::overloaded{
                     // TODO: print full-width
-                    [&](std::integral auto value) -> std::string
-                    { return ::fmt::format("0x{:0{}X}\t{}", value, pattern->getSize() * 2, value); },
+                    [&](pl::integral auto value) -> std::string
+                    { return fmt::format("0x{:0{}X}\t{}", value, pattern->getSize() * 2, value); },
                     [&](std::floating_point auto value) -> std::string
-                    { return ::fmt::format("{}", value); },
+                    { return fmt::format("{}", value); },
                     [&](const std::string &value) -> std::string
-                    { return ::fmt::format("\"{}\"", value); },
+                    { return fmt::format("\"{}\"", value); },
                     [&](bool value) -> std::string
                     { return value ? "true" : "false"; },
                     [&](char value) -> std::string
-                    { return ::fmt::format("'{}'", value); },
+                    { return fmt::format("'{}'", value); },
                     [&](const std::shared_ptr<ptrn::Pattern> &value) -> std::string
-                    { return ::fmt::format("\"{}\"", value->toString()); },
+                    { return fmt::format("\"{}\"", value->toString()); },
             }, pattern->getValue());
         }
 
         apiVisit("formatValue", pattern, value);
     }
 
-    void formatString(const ptrn::Pattern *pattern)
+    void formatString(ptrn::Pattern *pattern)
     {
         if (pattern->getVisibility() == ptrn::Visibility::Hidden) return;
         if (pattern->getVisibility() == ptrn::Visibility::TreeHidden) return;
@@ -333,16 +331,16 @@ PatternStatus PatternRun(const PatternRunArgs *args)
                 enum core::LogConsole::Level;
 
                 case Debug:
-                    ::fmt::print("[DEBUG] {}\n", stripped);
+                    fmt::print("[DEBUG] {}\n", stripped);
                     break;
                 case Info:
-                    ::fmt::print("[INFO]  {}\n", stripped);
+                    fmt::print("[INFO]  {}\n", stripped);
                     break;
                 case Warning:
-                    ::fmt::print("[WARN]  {}\n", stripped);
+                    fmt::print("[WARN]  {}\n", stripped);
                     break;
                 case Error:
-                    ::fmt::print("[ERROR] {}\n", stripped);
+                    fmt::print("[ERROR] {}\n", stripped);
                     break;
             }
         }
@@ -353,7 +351,26 @@ PatternStatus PatternRun(const PatternRunArgs *args)
     for (size_t i = 0; i < includePaths.size(); i++)
     {
 #ifdef _WIN32
-        includePaths[i] = wolv::util::utf8ToWstring(args->includes_data[i], {});
+        const auto setIncludePath = [&](const auto &includePath)
+        {
+            using IncludePathType = std::remove_cvref_t<decltype(includePath)>;
+            if constexpr (requires(const IncludePathType &path) { path.has_value(); })
+            {
+                if (includePath.has_value())
+                {
+                    includePaths[i] = *includePath;
+                }
+                else
+                {
+                    includePaths[i] = args->includes_data[i];
+                }
+            }
+            else
+            {
+                includePaths[i] = includePath;
+            }
+        };
+        setIncludePath(wolv::util::utf8ToWstring(args->includes_data[i]));
 #else
         includePaths[i] = args->includes_data[i];
 #endif
@@ -385,7 +402,7 @@ PatternStatus PatternRun(const PatternRunArgs *args)
     {
         filename = api::Source::DefaultSource;
     }
-    if (!runtime.executeString(args->source, filename))
+    if (const auto exitCode = runtime.executeString(args->source, filename); exitCode != 0)
     {
         auto compileErrors = runtime.getCompileErrors();
         if (!compileErrors.empty())
@@ -423,22 +440,35 @@ PatternStatus PatternRun(const PatternRunArgs *args)
         }
         else
         {
-            auto error = runtime.getEvalError().value();
-            if (args->eval_error == nullptr)
+            std::string pretty;
+            EvalError cerror = {
+                    .location = {
+                            .file = filename,
+                            .line = 0,
+                            .column = 0,
+                            .length = 0,
+                    },
+                    .pretty = nullptr,
+            };
+
+            if (const auto &error = runtime.getEvalError(); error.has_value())
             {
-                fmt::print("Pattern Error: {}:{} -> {}\n", error.line, error.column, error.message);
+                cerror.location.line = error->line;
+                cerror.location.column = error->column;
+                pretty = error->message;
             }
             else
             {
-                EvalError cerror = {
-                        .location = {
-                                .file = filename,
-                                .line = error.line,
-                                .column = error.column,
-                                .length = 0,
-                        },
-                        .pretty = error.message.c_str(),
-                };
+                pretty = fmt::format("Pattern execution failed with exit code {} without an evaluation error.", exitCode);
+            }
+
+            cerror.pretty = pretty.c_str();
+            if (args->eval_error == nullptr)
+            {
+                fmt::print("Pattern Error: {}:{} -> {}\n", cerror.location.line, cerror.location.column, pretty);
+            }
+            else
+            {
                 args->eval_error(args->userdata, &cerror);
             }
 
@@ -457,7 +487,14 @@ PatternStatus PatternRun(const PatternRunArgs *args)
     }
     catch (const std::exception &e)
     {
-        args->log_handler(args->userdata, LogLevelError, e.what());
+        if (args->log_handler != nullptr)
+        {
+            args->log_handler(args->userdata, LogLevelError, e.what());
+        }
+        else
+        {
+            fmt::print("[ERROR] {}\n", e.what());
+        }
         return PatternEvalError;
     }
 }

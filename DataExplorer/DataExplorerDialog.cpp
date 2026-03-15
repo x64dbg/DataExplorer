@@ -112,7 +112,11 @@ DataExplorerDialog::DataExplorerDialog(QWidget* parent) : QDialog(parent), ui(ne
 
     // Restore settings
     {
+#ifdef _WIN64
         QSettings settings("DataExplorer");
+#else
+        QSettings settings("DataExplorer32");
+#endif // _WIN64
 
         auto cursor = ui->codeEdit->textCursor();
         auto savedPosition = settings.value("cursor", cursor.position()).toInt();
@@ -136,7 +140,11 @@ DataExplorerDialog::~DataExplorerDialog()
 
 void DataExplorerDialog::closeEvent(QCloseEvent* event)
 {
+#ifdef _WIN64
     QSettings settings("DataExplorer");
+#else
+    QSettings settings("DataExplorer32");
+#endif // _WIN64
     settings.setValue("code", ui->codeEdit->toPlainText());
     settings.setValue("cursor", ui->codeEdit->textCursor().position());
     settings.setValue("geometry", saveGeometry());

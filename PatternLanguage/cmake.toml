@@ -1,9 +1,15 @@
 [project]
 name = "PatternLanguage"
+msvc-runtime = "static"
+cmake-after = """
+if(CMAKE_CXX_COMPILER_ID MATCHES \"Clang\" AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+    add_compile_definitions(FMT_USE_CONSTEVAL=0)
+endif()
+"""
 
 [fetch-content.PatternLanguage]
 git = "https://github.com/WerWolv/PatternLanguage"
-tag = "4e74b705f68a24377144d11c9e5143e4935cf1e0"
+tag = "a9a93ab56b7808cb5d551ff94d7bad8a3c963618"
 
 [options]
 LIBPL_ENABLE_CLI = false
