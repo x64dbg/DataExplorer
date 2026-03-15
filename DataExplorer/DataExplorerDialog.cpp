@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QTextBlock>
 #include <QSettings>
+#include <QAction>
 #include <shlwapi.h>
 #include "QtPlugin.h"
 #include "pluginmain.h"
